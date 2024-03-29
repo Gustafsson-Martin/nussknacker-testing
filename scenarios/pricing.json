@@ -1,0 +1,202 @@
+{
+    "metaData" : {
+      "id" : "pricing",
+      "additionalFields" : {
+        "description" : null,
+        "properties" : {
+          "inputSchema" : "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"customerId\": {\"type\": \"number\"},\n    \"type\": {\"type\": \"string\"},\n    \"amount\": {\"type\": \"number\"}\n  }\n}",
+          "outputSchema" : "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"interest\": {\"type\": \"number\"}\n  }\n}",
+          "slug" : "pricing"
+        },
+        "metaDataType" : "RequestResponseMetaData"
+      }
+    },
+    "nodes" : [
+      {
+        "id" : "request",
+        "ref" : {
+          "typ" : "request",
+          "parameters" : [
+          ]
+        },
+        "additionalFields" : {
+          "description" : null,
+          "layoutData" : {
+            "x" : -196,
+            "y" : -357
+          }
+        },
+        "type" : "Source"
+      },
+      {
+        "defaultNext" : [
+        ],
+        "nexts" : [
+          {
+            "expression" : {
+              "language" : "spel",
+              "expression" : "#input.type == \"car\""
+            },
+            "nodes" : [
+              {
+                "id" : "response",
+                "ref" : {
+                  "typ" : "response",
+                  "parameters" : [
+                    {
+                      "name" : "Raw editor",
+                      "expression" : {
+                        "language" : "spel",
+                        "expression" : "false"
+                      }
+                    },
+                    {
+                      "name" : "interest",
+                      "expression" : {
+                        "language" : "spel",
+                        "expression" : "0.15"
+                      }
+                    }
+                  ]
+                },
+                "endResult" : null,
+                "isDisabled" : null,
+                "additionalFields" : {
+                  "description" : null,
+                  "layoutData" : {
+                    "x" : -465,
+                    "y" : 7
+                  }
+                },
+                "type" : "Sink"
+              }
+            ]
+          },
+          {
+            "expression" : {
+              "language" : "spel",
+              "expression" : "#input.type != \"car\""
+            },
+            "nodes" : [
+              {
+                "id" : "UCRequest_UCRequest_post",
+                "service" : {
+                  "id" : "UCRequest_UCRequest_post",
+                  "parameters" : [
+                    {
+                      "name" : "id",
+                      "expression" : {
+                        "language" : "spel",
+                        "expression" : "#input.customerId"
+                      }
+                    }
+                  ]
+                },
+                "output" : "uc",
+                "additionalFields" : {
+                  "description" : null,
+                  "layoutData" : {
+                    "x" : 94,
+                    "y" : 29
+                  }
+                },
+                "type" : "Enricher"
+              },
+              {
+                "id" : "decision-table",
+                "service" : {
+                  "id" : "decision-table",
+                  "parameters" : [
+                    {
+                      "name" : "Basic Decision Table",
+                      "expression" : {
+                        "language" : "tabularDataDefinition",
+                        "expression" : "{\n  \"rows\": [\n    [\n      \"0\",\n      \"10000\",\n      \"0.00\",\n      \"0.01\",\n      \"0.01\"\n    ],\n    [\n      \"0\",\n      \"10000\",\n      \"0.02\",\n      \"0.05\",\n      \"0.02\"\n    ],\n    [\n      \"10001\",\n      \"20000\",\n      \"0.00\",\n      \"0.01\",\n      \"0.03\"\n    ],\n    [\n      \"10001\",\n      \"20000\",\n      \"0.02\",\n      \"0.05\",\n      \"0.04\"\n    ]\n  ],\n  \"columns\": [\n    {\n      \"name\": \"amount_lower\",\n      \"type\": \"java.lang.Integer\"\n    },\n    {\n      \"name\": \"amount_upper\",\n      \"type\": \"java.lang.Double\"\n    },\n    {\n      \"name\": \"pd_lower\",\n      \"type\": \"java.lang.Double\"\n    },\n    {\n      \"name\": \"pd_upper\",\n      \"type\": \"java.lang.Double\"\n    },\n    {\n      \"name\": \"interest\",\n      \"type\": \"java.lang.Double\"\n    }\n  ]\n}"
+                      }
+                    },
+                    {
+                      "name" : "Expression",
+                      "expression" : {
+                        "language" : "spel",
+                        "expression" : "true"
+                      }
+                    }
+                  ]
+                },
+                "output" : "priceMatrix",
+                "additionalFields" : {
+                  "description" : null,
+                  "layoutData" : {
+                    "x" : 94,
+                    "y" : 190
+                  }
+                },
+                "type" : "Enricher"
+              },
+              {
+                "id" : "interest",
+                "varName" : "interest",
+                "value" : {
+                  "language" : "spel",
+                  "expression" : "#priceMatrix.^[\n    #input.amount gt #this.amount_lower and\n    #input.amount le #this.amount_upper and\n    #uc.pd gt #this.pd_lower and\n    #uc.pd le #this.pd_upper\n]?.interest"
+                },
+                "additionalFields" : {
+                  "description" : null,
+                  "layoutData" : {
+                    "x" : 93,
+                    "y" : 333
+                  }
+                },
+                "type" : "Variable"
+              },
+              {
+                "id" : "response 1",
+                "ref" : {
+                  "typ" : "response",
+                  "parameters" : [
+                    {
+                      "name" : "Raw editor",
+                      "expression" : {
+                        "language" : "spel",
+                        "expression" : "false"
+                      }
+                    },
+                    {
+                      "name" : "interest",
+                      "expression" : {
+                        "language" : "spel",
+                        "expression" : "#interest"
+                      }
+                    }
+                  ]
+                },
+                "endResult" : null,
+                "isDisabled" : null,
+                "additionalFields" : {
+                  "description" : null,
+                  "layoutData" : {
+                    "x" : 94,
+                    "y" : 488
+                  }
+                },
+                "type" : "Sink"
+              }
+            ]
+          }
+        ],
+        "id" : "choice",
+        "expression" : null,
+        "exprVal" : null,
+        "additionalFields" : {
+          "description" : null,
+          "layoutData" : {
+            "x" : -196,
+            "y" : -170
+          }
+        },
+        "type" : "Switch"
+      }
+    ],
+    "additionalBranches" : [
+    ]
+  }
