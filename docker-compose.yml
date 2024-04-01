@@ -15,6 +15,7 @@ services:
     volumes:
       - storage_designer:/opt/nussknacker/storage
       - ./nussknacker.conf:/opt/nussknacker/conf/nussknacker.conf
+      - ./components/components.jar:/opt/nussknacker/components/common/components.jar
 
   influxdb:
     container_name: nussknacker_influxdb

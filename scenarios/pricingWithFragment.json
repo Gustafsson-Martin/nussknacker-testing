@@ -1,0 +1,201 @@
+{
+  "metaData" : {
+    "id" : "pricing",
+    "additionalFields" : {
+      "description" : null,
+      "properties" : {
+        "inputSchema" : "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"customerId\": {\"type\": \"number\"},\n    \"type\": {\"type\": \"string\"},\n    \"amount\": {\"type\": \"number\"}\n  }\n}",
+        "outputSchema" : "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"interest\": {\"type\": \"number\"}\n  }\n}",
+        "slug" : "pricing"
+      },
+      "metaDataType" : "RequestResponseMetaData"
+    }
+  },
+  "nodes" : [
+    {
+      "id" : "request",
+      "ref" : {
+        "typ" : "request",
+        "parameters" : [
+        ]
+      },
+      "additionalFields" : {
+        "description" : null,
+        "layoutData" : {
+          "x" : 180,
+          "y" : 0
+        }
+      },
+      "type" : "Source"
+    },
+    {
+      "defaultNext" : [
+      ],
+      "nexts" : [
+        {
+          "expression" : {
+            "language" : "spel",
+            "expression" : "#input.type == \"car\""
+          },
+          "nodes" : [
+            {
+              "id" : "response",
+              "ref" : {
+                "typ" : "response",
+                "parameters" : [
+                  {
+                    "name" : "Raw editor",
+                    "expression" : {
+                      "language" : "spel",
+                      "expression" : "false"
+                    }
+                  },
+                  {
+                    "name" : "interest",
+                    "expression" : {
+                      "language" : "spel",
+                      "expression" : "0.15"
+                    }
+                  }
+                ]
+              },
+              "endResult" : null,
+              "isDisabled" : null,
+              "additionalFields" : {
+                "description" : null,
+                "layoutData" : {
+                  "x" : 0,
+                  "y" : 360
+                }
+              },
+              "type" : "Sink"
+            }
+          ]
+        },
+        {
+          "expression" : {
+            "language" : "spel",
+            "expression" : "#input.type != \"car\""
+          },
+          "nodes" : [
+            {
+              "id" : "UCRequest_UCRequest_post",
+              "service" : {
+                "id" : "UCRequest_UCRequest_post",
+                "parameters" : [
+                  {
+                    "name" : "id",
+                    "expression" : {
+                      "language" : "spel",
+                      "expression" : "#input.customerId"
+                    }
+                  }
+                ]
+              },
+              "output" : "uc",
+              "additionalFields" : {
+                "description" : null,
+                "layoutData" : {
+                  "x" : 360,
+                  "y" : 360
+                }
+              },
+              "type" : "Enricher"
+            },
+            {
+              "outputs" : {
+                "output" : [
+                  {
+                    "id" : "response 1",
+                    "ref" : {
+                      "typ" : "response",
+                      "parameters" : [
+                        {
+                          "name" : "Raw editor",
+                          "expression" : {
+                            "language" : "spel",
+                            "expression" : "false"
+                          }
+                        },
+                        {
+                          "name" : "interest",
+                          "expression" : {
+                            "language" : "spel",
+                            "expression" : "#price.interest"
+                          }
+                        }
+                      ]
+                    },
+                    "endResult" : null,
+                    "isDisabled" : null,
+                    "additionalFields" : {
+                      "description" : null,
+                      "layoutData" : {
+                        "x" : 360,
+                        "y" : 720
+                      }
+                    },
+                    "type" : "Sink"
+                  }
+                ]
+              },
+              "id" : "PriceMatrix",
+              "ref" : {
+                "id" : "PriceMatrix",
+                "parameters" : [
+                  {
+                    "name" : "amount",
+                    "expression" : {
+                      "language" : "spel",
+                      "expression" : "#input.amount"
+                    }
+                  },
+                  {
+                    "name" : "pd",
+                    "expression" : {
+                      "language" : "spel",
+                      "expression" : "#uc.pd"
+                    }
+                  },
+                  {
+                    "name" : "default",
+                    "expression" : {
+                      "language" : "spel",
+                      "expression" : "0.0"
+                    }
+                  }
+                ],
+                "outputVariableNames" : {
+                  "output" : "price"
+                }
+              },
+              "additionalFields" : {
+                "description" : null,
+                "layoutData" : {
+                  "x" : 358,
+                  "y" : 533
+                }
+              },
+              "isDisabled" : null,
+              "fragmentParams" : null,
+              "type" : "FragmentInput"
+            }
+          ]
+        }
+      ],
+      "id" : "choice",
+      "expression" : null,
+      "exprVal" : null,
+      "additionalFields" : {
+        "description" : null,
+        "layoutData" : {
+          "x" : 180,
+          "y" : 180
+        }
+      },
+      "type" : "Switch"
+    }
+  ],
+  "additionalBranches" : [
+  ]
+}

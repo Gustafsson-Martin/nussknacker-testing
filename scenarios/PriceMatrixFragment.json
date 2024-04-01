@@ -1,0 +1,119 @@
+{
+  "metaData" : {
+    "id" : "PriceMatrix",
+    "additionalFields" : {
+      "description" : null,
+      "properties" : {
+        "docsUrl" : ""
+      },
+      "metaDataType" : "FragmentSpecificData"
+    }
+  },
+  "nodes" : [
+    {
+      "id" : "input",
+      "parameters" : [
+        {
+          "name" : "amount",
+          "typ" : {
+            "refClazzName" : "java.lang.Integer"
+          },
+          "required" : true,
+          "initialValue" : null,
+          "hintText" : "",
+          "valueEditor" : null,
+          "valueCompileTimeValidation" : null
+        },
+        {
+          "name" : "pd",
+          "typ" : {
+            "refClazzName" : "java.lang.Double"
+          },
+          "required" : true,
+          "initialValue" : null,
+          "hintText" : "",
+          "valueEditor" : null,
+          "valueCompileTimeValidation" : null
+        }
+      ],
+      "additionalFields" : {
+        "description" : "Get interest based on amount and pd",
+        "layoutData" : {
+          "x" : -343,
+          "y" : -285
+        }
+      },
+      "type" : "FragmentInputDefinition"
+    },
+    {
+      "id" : "decision-table",
+      "service" : {
+        "id" : "decision-table",
+        "parameters" : [
+          {
+            "name" : "Basic Decision Table",
+            "expression" : {
+              "language" : "tabularDataDefinition",
+              "expression" : "{\n  \"rows\": [\n    [\n      \"0\",\n      \"10000\",\n      \"0.00\",\n      \"0.01\",\n      \"0.01\"\n    ],\n    [\n      \"0\",\n      \"10000\",\n      \"0.02\",\n      \"0.05\",\n      \"0.02\"\n    ],\n    [\n      \"10001\",\n      \"20000\",\n      \"0.00\",\n      \"0.01\",\n      \"0.03\"\n    ],\n    [\n      \"10001\",\n      \"20000\",\n      \"0.02\",\n      \"0.05\",\n      \"0.04\"\n    ]\n  ],\n  \"columns\": [\n    {\n      \"name\": \"amount_lower\",\n      \"type\": \"java.lang.Integer\"\n    },\n    {\n      \"name\": \"amount_upper\",\n      \"type\": \"java.lang.Double\"\n    },\n    {\n      \"name\": \"pd_lower\",\n      \"type\": \"java.lang.Double\"\n    },\n    {\n      \"name\": \"pd_upper\",\n      \"type\": \"java.lang.Double\"\n    },\n    {\n      \"name\": \"interest\",\n      \"type\": \"java.lang.Double\"\n    }\n  ]\n}"
+            }
+          },
+          {
+            "name" : "Expression",
+            "expression" : {
+              "language" : "spel",
+              "expression" : "true"
+            }
+          }
+        ]
+      },
+      "output" : "priceMatrix",
+      "additionalFields" : {
+        "description" : null,
+        "layoutData" : {
+          "x" : -345,
+          "y" : -132
+        }
+      },
+      "type" : "Enricher"
+    },
+    {
+      "id" : "interest",
+      "varName" : "interest",
+      "value" : {
+        "language" : "spel",
+        "expression" : "#priceMatrix.^[\n    #amount gt #this.amount_lower and\n    #amount le #this.amount_upper and\n    #pd gt #this.pd_lower and\n    #pd le #this.pd_upper\n]?.interest"
+      },
+      "additionalFields" : {
+        "description" : null,
+        "layoutData" : {
+          "x" : -346,
+          "y" : 42
+        }
+      },
+      "type" : "Variable"
+    },
+    {
+      "id" : "output",
+      "outputName" : "output",
+      "fields" : [
+        {
+          "name" : "interest",
+          "expression" : {
+            "language" : "spel",
+            "expression" : "#interest"
+          }
+        }
+      ],
+      "additionalFields" : {
+        "description" : "interest rate",
+        "layoutData" : {
+          "x" : -346,
+          "y" : 203
+        }
+      },
+      "type" : "FragmentOutputDefinition"
+    }
+  ],
+  "additionalBranches" : [
+  ]
+}
