@@ -9,13 +9,14 @@ services:
       JDK_JAVA_OPTIONS: -Xmx1024M
       JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       INFLUXDB_URL: http://influxdb:8086
-      NUSSKNACKER_LOG_LEVEL: INFO
+      NUSSKNACKER_LOG_LEVEL: DEBUG
     ports:
       - 5005:5005
     volumes:
       - storage_designer:/opt/nussknacker/storage
       - ./nussknacker.conf:/opt/nussknacker/conf/nussknacker.conf
       - ./components/components.jar:/opt/nussknacker/components/common/components.jar
+      - ./components/example-component/target/example-component-1.0-SNAPSHOT.jar:/opt/nussknacker/components/common/example-components.jar
 
   influxdb:
     container_name: nussknacker_influxdb
